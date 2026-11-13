@@ -1,0 +1,105 @@
+{
+  "contract": "jsgrow.core",
+  "version": "0.1.0-draft",
+  "status": "draft",
+  "mediaType": "application/vnd.api+json",
+  "basePath": "/api",
+  "compatibility": {
+    "additiveFields": "minor",
+    "newOperations": "minor",
+    "removedOrRenamedFields": "major",
+    "changedRelationshipCardinality": "major",
+    "status": "Every breaking change requires joint frontend/backend acceptance."
+  },
+  "resources": {
+    "users": {
+      "identity": "public-profile",
+      "operations": ["list", "show", "update-self"],
+      "relationships": ["posts", "discussions", "private-messages", "notifications"]
+    },
+    "forums": {
+      "identity": "public-or-configured",
+      "operations": ["list", "show", "create", "update-self", "moderate"],
+      "relationships": ["categories", "author", "posts"]
+    },
+    "categories": {
+      "identity": "configured",
+      "operations": ["list", "show"],
+      "relationships": ["forums"]
+    },
+    "posts": {
+      "identity": "public-or-configured",
+      "operations": ["list", "show", "create", "update-self", "delete-self", "moderate"],
+      "relationships": ["author", "forum", "parent", "replies"]
+    },
+    "private-messages": {
+      "identity": "authenticated",
+      "operations": ["list", "show", "send", "retract-self", "mark-read"],
+      "relationships": ["sender", "recipient", "attachments"],
+      "rules": ["A conversation is established through a user profile or a related post.", "Opening a message marks it read."]
+    },
+    "notifications": {
+      "identity": "authenticated",
+      "operations": ["list", "show", "mark-read", "mark-all-read"],
+      "relationships": ["recipient", "actor", "subject"],
+      "rules": ["Notification kind and payload are extensible; clients render unknown kinds using title/body fallback."]
+    },
+    "settings": {
+      "identity": "administrator",
+      "operations": ["list", "show", "update"],
+      "relationships": []
+    },
+    "extensions": {
+      "identity": "administrator",
+      "operations": ["list", "show", "enable", "disable"],
+      "relationships": ["capabilities"]
+    },
+    "capabilities": {
+      "identity": "public",
+      "operations": ["show"],
+      "relationships": []
+    },
+    "content-products": {
+      "identity": "configured-content-type",
+      "operations": ["list", "show", "create", "update-self", "publish", "purchase"],
+      "relationships": ["author", "category", "discussion", "attachments", "entitlement"]
+    },
+    "trade-listings": {
+      "identity": "authenticated",
+      "operations": ["list", "show", "create", "update-self", "delete-self", "prepare-payment"],
+      "relationships": ["owner", "content", "order"]
+    },
+    "paid-orders": {
+      "identity": "participant-or-administrator",
+      "operations": ["list", "show", "act", "request-refund"],
+      "relationships": ["payer", "provider", "listing", "service-case", "settlements"]
+    },
+    "service-cases": {
+      "identity": "participant-or-administrator",
+      "operations": ["list", "show", "propose", "start", "submit-result", "confirm", "return", "end"],
+      "relationships": ["customer", "provider", "source-order", "artifacts"]
+    },
+    "trade-settlement-batches": {
+      "identity": "administrator-or-authorized-service",
+      "operations": ["list", "show", "record-internal"],
+      "relationships": ["paid-order", "allocations"],
+      "rules": ["Currency is CNY and amounts are integer minor units.", "Allocations are immutable and must conserve the source amount."]
+    }
+  },
+  "coreEndpoints": {
+    "GET /capabilities": {"resource": "capabilities", "status": "implemented"},
+    "GET /users/{id}": {"resource": "users", "status": "partial"},
+    "GET /forums": {"resource": "forums", "status": "partial"},
+    "GET /posts/{id}": {"resource": "posts", "status": "partial"},
+    "GET /private-messages": {"resource": "private-messages", "status": "planned"},
+    "POST /private-messages": {"resource": "private-messages", "status": "planned"},
+    "GET /notifications": {"resource": "notifications", "status": "planned"},
+    "GET /settings": {"resource": "settings", "status": "partial"},
+    "GET /extensions": {"resource": "extensions", "status": "partial"},
+    "GET /content-products": {"resource": "content-products", "status": "partial"},
+    "GET /trade-listings": {"resource": "trade-listings", "status": "implemented"},
+    "GET /paid-orders": {"resource": "paid-orders", "status": "implemented"},
+    "GET /service-cases": {"resource": "service-cases", "status": "partial"},
+    "GET /trade-settlements": {"resource": "trade-settlement-batches", "status": "planned"}
+  }
+}
